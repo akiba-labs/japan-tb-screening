@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CardDisclaimer } from "@/components/card-disclaimer";
 import { ShareBar } from "@/components/share-bar";
+import { isGithubPages, pagesSiteUrl } from "@/lib/hosting";
 import { NATIONALITIES, STATUSES, checkJpets, type Nationality } from "@/lib/jpets";
 import { EXAMPLE_SHARED, NATIONALITY_LABEL, PUBLIC_URL, VERDICT_LABEL, fmtDate, resultPath, toCheckInput, type Shared } from "@/lib/share";
 
@@ -39,7 +40,7 @@ export function Calculator({ initial }: { initial?: Shared }) {
       return null;
     }
   })();
-  const shareUrl = `${PUBLIC_URL}${resultPath(shared)}`;
+  const shareUrl = isGithubPages ? `${pagesSiteUrl(PUBLIC_URL)}/` : `${PUBLIC_URL}${resultPath(shared)}`;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
@@ -194,12 +195,18 @@ export function Calculator({ initial }: { initial?: Shared }) {
                 ))}
               </ul>
               <div className="mt-6 border-t border-line pt-4" data-testid="share-result">
-                <p className="text-xs text-muted">Share this result. The link carries only these choices; nothing is stored.</p>
+                <p className="text-xs text-muted">
+                  {isGithubPages
+                    ? "Share the checker. A link to this exact result returns when hosting is back."
+                    : "Share this result. The link carries only these choices; nothing is stored."}
+                </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <ShareBar url={shareUrl} text={`Japan TB screening (JPETS) for ${NATIONALITY_LABEL[nationality]}, filed ${applicationDate}: ${VERDICT_LABEL[result.verdict]}. Free checker:`} />
-                  <a href={resultPath(shared)} className="text-sm text-muted underline underline-offset-2 hover:text-foreground">
-                    Open result page
-                  </a>
+                  {isGithubPages ? null : (
+                    <a href={resultPath(shared)} className="text-sm text-muted underline underline-offset-2 hover:text-foreground">
+                      Open result page
+                    </a>
+                  )}
                 </div>
               </div>
             </>

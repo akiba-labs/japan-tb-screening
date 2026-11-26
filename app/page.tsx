@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Calculator } from "@/components/calculator";
 import { FaqSection, type FaqItem } from "@/components/faq-section";
 import { CLINICS } from "@/lib/clinics";
+import { API_PAUSED_NOTE, isGithubPages, pagesSiteUrl, withBasePath } from "@/lib/hosting";
 import { COUNTRIES, SOURCES, STATUSES } from "@/lib/jpets";
 import { PUBLIC_URL, fmtDate } from "@/lib/share";
 
@@ -25,7 +26,7 @@ const webAppLd = {
   "@type": "WebApplication",
   name: "Japan TB Screening Check (JPETS)",
   alternateName: ["JPETS checker", "入国前結核スクリーニング 判定", "Cek JPETS"],
-  url: PUBLIC_URL,
+  url: isGithubPages ? pagesSiteUrl(PUBLIC_URL) : PUBLIC_URL,
   applicationCategory: "TravelApplication",
   operatingSystem: "Any",
   isAccessibleForFree: true,
@@ -90,7 +91,9 @@ const faq: FaqItem[] = [
   },
   {
     q: "Is there a free JPETS API for AI agents?",
-    a: `Yes. Free, no key, CORS open: GET ${PUBLIC_URL}/api/check?nationality=indonesia&status=student&applicationDate=2027-01-15 returns the verdict, reasons, X-ray window, documents and the Panel Clinic list. All rules at ${PUBLIC_URL}/api/rules, OpenAPI at ${PUBLIC_URL}/openapi.json, and the japan_tb_screening_check tool on https://free-agent-tools.vercel.app/mcp.`,
+    a: isGithubPages
+      ? API_PAUSED_NOTE
+      : `Yes. Free, no key, CORS open: GET ${PUBLIC_URL}/api/check?nationality=indonesia&status=student&applicationDate=2027-01-15 returns the verdict, reasons, X-ray window, documents and the Panel Clinic list. All rules at ${PUBLIC_URL}/api/rules, OpenAPI at ${PUBLIC_URL}/openapi.json, and the japan_tb_screening_check tool on https://free-agent-tools.vercel.app/mcp.`,
   },
   {
     q: "入国前結核スクリーニングの対象者は？",
@@ -174,18 +177,28 @@ export default function HomePage() {
 
       <section className="mt-12 max-w-3xl rounded-3xl border border-line bg-panel/40 p-5 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground">For AI agents and developers</h2>
-        <p className="mt-2 text-sm text-muted">
-          Keyless JSON, CORS open, GET or POST:{" "}
-          <a className="font-mono text-foreground underline underline-offset-2" href="/api/check?nationality=indonesia&status=student&applicationDate=2027-01-15">
-            /api/check?nationality=indonesia&amp;status=student&amp;applicationDate=2027-01-15
-          </a>
-          . All rules and clinics: <a className="font-mono text-foreground underline underline-offset-2" href="/api/rules">/api/rules</a>. Docs: <a className="underline underline-offset-2" href="/openapi.json">OpenAPI</a>,{" "}
-          <a className="underline underline-offset-2" href="/llms.txt">llms.txt</a>, MCP tool <span className="font-mono text-foreground">japan_tb_screening_check</span> on{" "}
-          <a className="underline underline-offset-2" href="https://free-agent-tools.vercel.app" target="_blank" rel="noopener noreferrer">
-            free-agent-tools
-          </a>
-          .
-        </p>
+        {isGithubPages ? (
+          <p className="mt-2 text-sm text-muted">
+            {API_PAUSED_NOTE}{" "}
+            <a className="underline underline-offset-2" href={withBasePath("/llms.txt")}>
+              llms.txt
+            </a>{" "}
+            describes the checker and the API contract.
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-muted">
+            Keyless JSON, CORS open, GET or POST:{" "}
+            <a className="font-mono text-foreground underline underline-offset-2" href="/api/check?nationality=indonesia&status=student&applicationDate=2027-01-15">
+              /api/check?nationality=indonesia&amp;status=student&amp;applicationDate=2027-01-15
+            </a>
+            . All rules and clinics: <a className="font-mono text-foreground underline underline-offset-2" href="/api/rules">/api/rules</a>. Docs: <a className="underline underline-offset-2" href="/openapi.json">OpenAPI</a>,{" "}
+            <a className="underline underline-offset-2" href="/llms.txt">llms.txt</a>, MCP tool <span className="font-mono text-foreground">japan_tb_screening_check</span> on{" "}
+            <a className="underline underline-offset-2" href="https://free-agent-tools.vercel.app" target="_blank" rel="noopener noreferrer">
+              free-agent-tools
+            </a>
+            .
+          </p>
+        )}
       </section>
 
       <FaqSection items={faq} heading="JPETS questions" />
