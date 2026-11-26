@@ -2,7 +2,8 @@
 
 Free checker for **Japan Pre-Entry Tuberculosis Screening (JPETS, 入国前結核スクリーニング)**: do nationals of the Philippines, Nepal, Viet Nam, Indonesia, Myanmar or China need a TB Clearance Certificate from a designated Panel Clinic for a Japan Certificate of Eligibility (COE) or visa?
 
-- Live: https://japan-tb-screening.vercel.app
+- Full app and API (Vercel): https://japan-tb-screening.vercel.app
+- Checker (GitHub Pages): https://akiba-labs.github.io/japan-tb-screening/
 - API: `GET/POST /api/check`, `GET /api/rules`
 - Agent docs: `/llms.txt`, `/openapi.json`, `/.well-known/ai-plugin.json`
 - MCP tool: `japan_tb_screening_check` on https://free-agent-tools.vercel.app/mcp
@@ -38,6 +39,11 @@ Sources: MHLW JPETS page, Guideline (rev. 2026-09-25), JPETS Q&A, ISA page 10_00
 npm install
 npm test
 npm run build
+npm run build:pages
 ```
+
+`npm run build` is the Vercel app (checker, JSON API, share pages). `npm run build:pages` writes a static `out/` for GitHub Pages and checks that internal links and assets resolve under `/japan-tb-screening`. Server routes stay in the repo; the Pages script only moves them aside for that build.
+
+GitHub settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Pushes to `main` deploy with `.github/workflows/pages.yml`. The copy-paste steps for the other tool repos are at the top of `scripts/build-pages.mjs`.
 
 MIT license.
